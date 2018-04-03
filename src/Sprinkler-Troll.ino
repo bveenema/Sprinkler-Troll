@@ -13,7 +13,28 @@ void setup() {
 
 // loop() runs over and over again, as quickly as it can execute.
 void loop() {
-  publishMessage("googleDocs","test");
+
+  bool wifiReady = WiFi.ready();
+	bool cloudReady = Particle.connected();
+  static uint32_t firstAvailable;
+
+	if (wifiReady) {
+		if (firstAvailable == 0) {
+			firstAvailable = millis();
+		}
+		if (millis() - firstAvailable > 30000) {
+			publishMessage("googleDocs","test");
+      delay(2000);
+			System.sleep(30);
+		}
+	}
+	else {
+		firstAvailable = 0;
+	}
+
+
+
+
 
   // Wait 1 hour
   //System.sleep(30);
