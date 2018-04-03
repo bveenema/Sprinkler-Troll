@@ -3,6 +3,7 @@
  * Description: Sprinkler Controller
  * Author: Veenema Design Works
  */
+#include <ArduinoJson.h>
 
 // setup() runs once, when the device is first turned on.
 void setup() {
@@ -12,6 +13,26 @@ void setup() {
 
 // loop() runs over and over again, as quickly as it can execute.
 void loop() {
-  // The core of your code will likely live here.
-  
+  publishMessage("googleDocs","test");
+
+  // Wait 1 hour
+  //System.sleep(30);
+  // Wait 10 seconds
+  delay(10000);
+}
+
+void publishMessage(const char* destination, const char* message){
+  const size_t bufferSize = JSON_OBJECT_SIZE(2)+80;
+  DynamicJsonBuffer jsonBuffer(bufferSize);
+
+  JsonObject& root = jsonBuffer.createObject();
+  root["message"] = message;
+  root["time"] = Time.now();
+
+  char buffer[bufferSize];
+  root.printTo(buffer);
+
+  Particle.publish(destination, buffer, 60, PRIVATE);
+
+  return;
 }
