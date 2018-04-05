@@ -5,25 +5,28 @@
  */
 #include <ArduinoJson.h>
 
-// setup() runs once, when the device is first turned on.
-void setup() {
-  // Put initialization like pinMode and begin functions here.
+const pin_t SWITCH_PIN = D3;
 
+void setup() {
+  pinMode(SWITCH_PIN,INPUT_PULLUP);
 }
 
-// loop() runs over and over again, as quickly as it can execute.
-void loop() {
 
-  bool wifiReady = WiFi.ready();
+void loop() {
 	bool cloudReady = Particle.connected();
   static uint32_t firstAvailable;
 
-	if (wifiReady) {
+	if (cloudReady) {
 		if (firstAvailable == 0) {
 			firstAvailable = millis();
 		}
 		if (millis() - firstAvailable > 30000) {
-			publishMessage("googleDocs","test");
+      if(!digitalRead(SWITCH_PIN)){
+        publishMessage("googleDocs","Swith ON");
+      } else {
+        publishMessage("googleDocs", "Switch OFF");
+      }
+
       delay(2000);
 			System.sleep(30);
 		}
