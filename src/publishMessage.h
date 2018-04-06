@@ -7,3 +7,5 @@ enum ShouldProcess {
 };
 
 void publishMessage(const char*,const char*,ShouldProcess=PROCESS);
+void getSunriseTime(const char* cityId, ShouldProcess=PROCESS);
+void getSunriseTime(uint32_t cityId, ShouldProcess=PROCESS);
