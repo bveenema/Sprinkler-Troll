@@ -8,7 +8,6 @@
 #include "publishMessage.h"
 #include <ArduinoJson.h>
 
-//const char* sprinklerTimeMessage = "{\"duration\":1200,\"deadline\":1522919753}";
 
 void setup() {
   pinMode(SWITCH_PIN,INPUT_PULLUP);
@@ -46,16 +45,6 @@ void loop() {
 	else {
 		firstAvailable = 0;
 	}
-}
-
-void parseMessage(const char* message){
-  const size_t bufferSize = JSON_OBJECT_SIZE(2) + 40;
-  DynamicJsonBuffer jsonBuffer(bufferSize);
-
-  JsonObject& root = jsonBuffer.parseObject(message);
-
-  SprinklerStats.duration = root["duration"]; // 1200
-  SprinklerStats.deadline = root["deadline"]; // 1522919753
 }
 
 void getSunriseHandler(const char *event, const char *data) {
