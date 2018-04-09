@@ -41,3 +41,21 @@ void getSunriseTime(uint32_t cityId, ShouldProcess shouldProcess){
   getSunriseTime(sCityId, shouldProcess);
   return;
 }
+
+void getSunriseResponseHandler(const char *event, const char *data) {
+  int32_t newDeadline = atoi(data);
+
+  if(newDeadline != SprinklerStats.deadline){
+    // only log change if greater than 60 seconds
+    if(newDeadline > (SprinklerStats.deadline + 60)){
+      char buffer[100];
+      sprintf(buffer, "new DEADLINE: %i", newDeadline);
+      publishMessage("googleDocs", buffer, PROCESS);
+    }
+    SprinklerStats.deadline = newDeadline;
+    SprinklerStats.targetStartTime = newDeadline - SprinklerStats.duration;
+    EEPROM.put(statsAddr, SprinklerStats);
+  }
+
+  Particle.publish("response",Time.timeStr(newDeadline),60,PRIVATE);
+}

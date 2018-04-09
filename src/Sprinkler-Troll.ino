@@ -6,7 +6,6 @@
 #include "Particle.h"
 #include "config.h"
 #include "publishMessage.h"
-#include <ArduinoJson.h>
 
 
 void setup() {
@@ -19,7 +18,7 @@ void setup() {
     EEPROM.put(statsAddr, SprinklerStats);
   }
   Time.zone(-4);
-  Particle.subscribe("hook-response/getSunrise", getSunriseHandler, MY_DEVICES);
+  Particle.subscribe("hook-response/getSunrise", getSunriseResponseHandler, MY_DEVICES);
 }
 
 
@@ -45,19 +44,4 @@ void loop() {
 	else {
 		firstAvailable = 0;
 	}
-}
-
-void getSunriseHandler(const char *event, const char *data) {
-  uint32_t newDeadline = atoi(data);
-
-  if(newDeadline != SprinklerStats.deadline){
-    SprinklerStats.deadline = newDeadline;
-    SprinklerStats.targetStartTime = newDeadline - SprinklerStats.duration;
-    EEPROM.put(statsAddr, SprinklerStats);
-    char buffer[100];
-    sprintf(buffer, "new DEADLINE: %i", SprinklerStats.deadline);
-    publishMessage("googleDocs", buffer, PROCESS);
-  }
-
-  Particle.publish("response",Time.timeStr(newDeadline),60,PRIVATE);
 }
