@@ -6,6 +6,9 @@
 #include "Particle.h"
 #include "config.h"
 #include "publishMessage.h"
+#include <PublishManager.h>
+
+PublishManager publishManager;
 
 Stats SprinklerStats;
 

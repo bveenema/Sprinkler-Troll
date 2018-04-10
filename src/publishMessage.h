@@ -1,6 +1,9 @@
 #include "application.h"
 #include "config.h"
 #include <ArduinoJson.h>
+#include <PublishManager.h>
+
+extern PublishManager publishManager;
 
 enum ShouldProcess {
   NO_PROCESS,

@@ -11,7 +11,7 @@ void publishMessage(const char* destination, const char* message, ShouldProcess 
   char buffer[bufferSize];
   root.printTo(buffer);
 
-  Particle.publish(destination, buffer, 60, PRIVATE);
+  publishManager.publish(destination, buffer);
   if(shouldProcess == PROCESS){
     Particle.process();
   }
@@ -28,7 +28,7 @@ void getSunriseTime(const char* cityId, ShouldProcess shouldProcess){
   char buffer[bufferSize];
   root.printTo(buffer);
 
-  Particle.publish("getSunrise", buffer, 60, PRIVATE);
+  publishManager.publish("getSunrise", buffer);
   if(shouldProcess == PROCESS){
     Particle.process();
   }
@@ -57,5 +57,5 @@ void getSunriseResponseHandler(const char *event, const char *data) {
     EEPROM.put(statsAddr, SprinklerStats);
   }
 
-  Particle.publish("response",Time.timeStr(newDeadline),60,PRIVATE);
+  publishManager.publish("response",Time.timeStr(newDeadline));
 }
