@@ -33,11 +33,9 @@ void setup() {
   }
   Time.zone(-4);
 
-  publishMessage("general_message", Time.timeStr(beginningOfDay(Time.now()) ) );
-
-  publishMessage("general_message", String(timeOfDay(SprinklerStats.deadline)).c_str() );
-
   Particle.subscribe("hook-response/getSunrise", getSunriseResponseHandler, MY_DEVICES);
+  Particle.subscribe("hook-response/getGoogleDocs", getGoogleDocsResponseHandler, MY_DEVICES);
+  Particle.publish("getGoogleDocs",NULL,60,PRIVATE);
 }
 
 
@@ -60,4 +58,8 @@ void loop() {
 	else {
 		firstAvailable = 0;
 	}
+}
+
+void getGoogleDocsResponseHandler(const char *event, const char *data) {
+  publishMessage("G-Docs_Get_Response", data);
 }
