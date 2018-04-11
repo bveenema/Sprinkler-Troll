@@ -6,38 +6,24 @@
 #include "Particle.h"
 #include "sprinkler-troll-util.h"
 #include "config.h"
+#include "sprinklerController.h"
 #include "publishMessage.h"
 #include <PublishManager.h>
 
-PublishManager publishManager;
-
-Stats SprinklerStats;
-
 STARTUP(System.enableFeature(FEATURE_RETAINED_MEMORY));
 
-enum states_sprinkler {
-  INIT, CHECK_SHOULD_BE_ON, TURN_SPRINKLER_ON, CHECK_DURATION_EXPIRED, TURN_SPRINKLER_OFF, ALLOW_SLEEP
-};
-enum states_sprinkler state = INIT;
-enum states_sprinkler prevState = INIT;
+PublishManager publishManager;
+Stats SprinklerStats;
+SprinklerController sprinklerController;
 
-uint32_t checkShouldBeOnTimeout = 30000;
-uint32_t checkDurationExpiredTimeout = 30000;
-
-bool FLAG_CanSleep = false;
-
-enum sleep_types { WIFI_ONLY, DEEP };
-enum sleep_types sleepType = DEEP;
-
-enum sprinkler_states { ON, OFF }; // ON = 0, OFF = 1 handy trick as relay is "ON" when pin is "LOW"
-retained enum sprinkler_states sprinkler_state = OFF;
+retained enum sprinkler_states sprinkler_state;
 
 void setup() {
   Serial.begin(115200);
-  delay(5000);
+
+  sprinklerController.begin();
+
   pinMode(SWITCH_PIN,INPUT_PULLUP);
-  pinMode(SPRINKLER_RELAY, OUTPUT);
-  digitalWrite(SPRINKLER_RELAY, sprinkler_state);
 
   EEPROM.get(statsAddr, SprinklerStats);
   if(SprinklerStats.version != 0){
@@ -51,8 +37,7 @@ void setup() {
 
   publishMessage("general_message", String(timeOfDay(SprinklerStats.deadline)).c_str() );
 
-  FLAG_CanSleep = false;
-  state = CHECK_SHOULD_BE_ON;
+  Particle.subscribe("hook-response/getSunrise", getSunriseResponseHandler, MY_DEVICES);
 }
 
 
@@ -60,67 +45,14 @@ void loop() {
 	bool cloudReady = Particle.connected();
   static uint32_t firstAvailable;
 
-  switch(state){
-    case INIT:
-      break;
-
-    case CHECK_SHOULD_BE_ON:
-      if(Time.now() >= SprinklerStats.targetStartTime){
-        if(Time.now() <= SprinklerStats.deadline) state = TURN_SPRINKLER_ON;
-        if(Time.now() >= SprinklerStats.deadline) state = TURN_SPRINKLER_OFF;
-      }
-
-      static uint32_t checkShouldBeOnTimer;
-      if(checkShouldBeOnTimer == 0) checkShouldBeOnTimer = millis();
-      if(millis() - checkShouldBeOnTimer > checkShouldBeOnTimeout) state = ALLOW_SLEEP;
-
-      break;
-
-    case TURN_SPRINKLER_ON:
-      if(sprinkler_state == OFF){
-        publishMessage("googleDocs","Turning sprinkler ON");
-      }
-      sprinkler_state = ON;
-      digitalWrite(SPRINKLER_RELAY, sprinkler_state);
-      state = CHECK_DURATION_EXPIRED;
-      break;
-
-    case CHECK_DURATION_EXPIRED:
-      if(Time.now() >= SprinklerStats.deadline) state = TURN_SPRINKLER_OFF;
-
-      static uint32_t checkDurationExpiredTimer;
-      if(checkDurationExpiredTimer == 0) checkDurationExpiredTimer = millis();
-      if(millis()-checkDurationExpiredTimer > checkDurationExpiredTimeout) state = ALLOW_SLEEP;
-
-      break;
-
-    case TURN_SPRINKLER_OFF:
-      if(sprinkler_state == ON){
-        publishMessage("googleDocs","Turning sprinkler OFF");
-      }
-      sprinkler_state = OFF;
-      digitalWrite(SPRINKLER_RELAY, sprinkler_state);
-      state = ALLOW_SLEEP;
-      break;
-
-    case ALLOW_SLEEP:
-      FLAG_CanSleep = true;
-      break;
-
-    default:
-      char buffer[100];
-      sprintf(buffer, "ERROR: State machine bad state, %i", state);
-      publishMessage("googleDocs",buffer,PROCESS);
-      state = CHECK_SHOULD_BE_ON;
-      break;
-  }
+  sprinklerController.update();
 
 	if (cloudReady) {
 		if (firstAvailable == 0) {
 			firstAvailable = millis();
-      getSunriseTime(SprinklerStats.cityID, NO_PROCESS); // Get the current sunrise time from Open Weather API, arg is city ID
+      getSunriseTime(SprinklerStats.cityID, NO_PROCESS);
 		}
-		if ((millis() - firstAvailable > 30000) && FLAG_CanSleep) {
+		if ((millis() - firstAvailable > 30000) && sprinklerController.canSleep()) {
       Particle.process();
 			System.sleep(SLEEP_MODE_DEEP,30);
 		}

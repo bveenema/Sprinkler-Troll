@@ -1,7 +1,9 @@
+#pragma once
+
 #include "application.h"
 
 #ifndef SPRINKLER_CONFIG_H
-#define SPRINKLER_CONFIG_H 1
+#define SPRINKLER_CONFIG_H
 
 
 const pin_t SWITCH_PIN = D3;
@@ -25,4 +27,12 @@ const Stats defaultStats = {
                       1522995300, //4/6/18 @ 6:15am EST
                       5084633 //Claremont NH
                     };
+
+
+// ON = 0, SPRINKLER_OFF = 1 handy trick as relay is "ON" when pin is "LOW"
+enum sprinkler_states { SPRINKLER_ON, SPRINKLER_OFF };
+
+// Retained variable: DO NOT change order, type or anything without a complete VIN and VBAT power cycle
+extern retained enum sprinkler_states sprinkler_state;
+
 #endif

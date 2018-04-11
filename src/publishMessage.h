@@ -1,3 +1,5 @@
+#pragma once
+
 #include "application.h"
 #include "config.h"
 #include <ArduinoJson.h>
