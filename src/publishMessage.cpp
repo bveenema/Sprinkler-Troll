@@ -43,11 +43,11 @@ void getSunriseTime(uint32_t cityId, ShouldProcess shouldProcess){
 }
 
 void getSunriseResponseHandler(const char *event, const char *data) {
-  int32_t newDeadline = atoi(data);
+  int32_t newDeadline = timeOfDay(atoi(data));
 
   if(newDeadline != SprinklerStats.deadline){
     // only log change if greater than 60 seconds
-    if(newDeadline > (SprinklerStats.deadline + 60)){
+    if((newDeadline >= (SprinklerStats.deadline + 5)) || (newDeadline <= (SprinklerStats.deadline - 5))){
       char buffer[100];
       sprintf(buffer, "new DEADLINE: %i", newDeadline);
       publishMessage("googleDocs", buffer, PROCESS);
@@ -57,5 +57,6 @@ void getSunriseResponseHandler(const char *event, const char *data) {
     EEPROM.put(statsAddr, SprinklerStats);
   }
 
-  publishManager.publish("response",Time.timeStr(newDeadline));
+  char buffer[20];
+  publishManager.publish("response",itoa(newDeadline,buffer,10));
 }

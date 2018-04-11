@@ -1,6 +1,7 @@
 #pragma once
 
 #include "application.h"
+#include "sprinkler-troll-util.h"
 #include "config.h"
 #include <ArduinoJson.h>
 #include <PublishManager.h>
