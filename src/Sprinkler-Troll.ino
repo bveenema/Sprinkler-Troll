@@ -4,6 +4,7 @@
  * Author: Veenema Design Works
  */
 #include "Particle.h"
+#include "sprinkler-troll-util.h"
 #include "config.h"
 #include "publishMessage.h"
 #include <PublishManager.h>
@@ -45,18 +46,10 @@ void setup() {
     EEPROM.put(statsAddr, SprinklerStats);
   }
   Time.zone(-4);
-  Particle.subscribe("hook-response/getSunrise", getSunriseResponseHandler, MY_DEVICES);
 
-  struct tm *thisTime;
-  thisTime = gmtime(&SprinklerStats.deadline);
-  thisTime->tm_hour = 0;
-  thisTime->tm_min = 0;
-  thisTime->tm_sec = 0;
-  uint32_t beginOfDay = mktime(thisTime);
-  uint32_t realDeadline = SprinklerStats.deadline - beginOfDay;
+  publishMessage("general_message", Time.timeStr(beginningOfDay(Time.now()) ) );
 
-  uint32_t realTimeNow = Time.now() - beginOfDay;
-  Serial.printlnf("readDeadline: %i, realTimeNow: %i", realDeadline, realTimeNow);
+  publishMessage("general_message", String(timeOfDay(SprinklerStats.deadline)).c_str() );
 
   FLAG_CanSleep = false;
   state = CHECK_SHOULD_BE_ON;
