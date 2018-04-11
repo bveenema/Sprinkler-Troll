@@ -119,11 +119,6 @@ void loop() {
 		if (firstAvailable == 0) {
 			firstAvailable = millis();
       getSunriseTime(SprinklerStats.cityID, NO_PROCESS); // Get the current sunrise time from Open Weather API, arg is city ID
-      if(!digitalRead(SWITCH_PIN)){
-        publishMessage("general_message","Swith ON", NO_PROCESS);
-      } else {
-        publishMessage("general_message", "Switch OFF", NO_PROCESS);
-      }
 		}
 		if ((millis() - firstAvailable > 30000) && FLAG_CanSleep) {
       Particle.process();
