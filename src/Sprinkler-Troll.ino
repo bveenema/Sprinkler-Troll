@@ -33,6 +33,7 @@ retained enum sprinkler_states sprinkler_state = OFF;
 
 void setup() {
   Serial.begin(115200);
+  delay(5000);
   pinMode(SWITCH_PIN,INPUT_PULLUP);
   pinMode(SPRINKLER_RELAY, OUTPUT);
   digitalWrite(SPRINKLER_RELAY, sprinkler_state);
@@ -46,7 +47,18 @@ void setup() {
   Time.zone(-4);
   Particle.subscribe("hook-response/getSunrise", getSunriseResponseHandler, MY_DEVICES);
 
-  bool FLAG_CanSleep = false;
+  struct tm *thisTime;
+  thisTime = gmtime(&SprinklerStats.deadline);
+  thisTime->tm_hour = 0;
+  thisTime->tm_min = 0;
+  thisTime->tm_sec = 0;
+  uint32_t beginOfDay = mktime(thisTime);
+  uint32_t realDeadline = SprinklerStats.deadline - beginOfDay;
+
+  uint32_t realTimeNow = Time.now() - beginOfDay;
+  Serial.printlnf("readDeadline: %i, realTimeNow: %i", realDeadline, realTimeNow);
+
+  FLAG_CanSleep = false;
   state = CHECK_SHOULD_BE_ON;
 }
 
