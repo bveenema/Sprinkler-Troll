@@ -14,7 +14,7 @@ public:
 
   void update(void);
 
-  bool canSleep(void);
+  enum sleep_types canSleep(void);
 
 private:
   bool FLAG_CanSleep = false;
@@ -26,6 +26,5 @@ private:
   };
   enum states_sprinkler state = INIT;
 
-  enum sleep_types { WIFI_ONLY, DEEP };
   enum sleep_types sleepType = DEEP;
 };

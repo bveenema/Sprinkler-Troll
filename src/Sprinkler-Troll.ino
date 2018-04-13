@@ -50,9 +50,14 @@ void loop() {
 			firstAvailable = millis();
       getSunriseTime(SprinklerStats.cityID, NO_PROCESS);
 		}
-		if ((millis() - firstAvailable > 30000) && sprinklerController.canSleep()) {
+		if ((millis() - firstAvailable > 30000) && sprinklerController.canSleep() != NO_SLEEP) {
       Particle.process();
-			System.sleep(SLEEP_MODE_DEEP,30);
+      if(sprinklerController.canSleep() == DEEP){
+        System.sleep(SLEEP_MODE_DEEP,30);
+      } else {
+        System.sleep(30);
+      }
+
 		}
 	}
 	else {

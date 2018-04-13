@@ -36,6 +36,7 @@ void SprinklerController::update(void){
       }
       sprinkler_state = SPRINKLER_ON;
       digitalWrite(SPRINKLER_RELAY, sprinkler_state);
+      sleepType = WIFI_ONLY;
       state = CHECK_DURATION_EXPIRED;
       break;
 
@@ -54,6 +55,7 @@ void SprinklerController::update(void){
       }
       sprinkler_state = SPRINKLER_OFF;
       digitalWrite(SPRINKLER_RELAY, sprinkler_state);
+      sleepType = DEEP;
       state = ALLOW_SLEEP;
       break;
 
@@ -70,6 +72,10 @@ void SprinklerController::update(void){
   }
 }
 
-bool SprinklerController::canSleep(void){
-  return FLAG_CanSleep;
+enum sleep_types SprinklerController::canSleep(void){
+  if(FLAG_CanSleep) {
+    return sleepType;
+  } else {
+    return NO_SLEEP;
+  }
 }
