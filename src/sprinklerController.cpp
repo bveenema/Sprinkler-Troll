@@ -20,14 +20,13 @@ void SprinklerController::update(void){
 
     case CHECK_SHOULD_BE_ON: {
         uint32_t timeNow = timeOfDay(Time.now());
-        if(timeNow >= SprinklerStats.targetStartTime){
-          if(timeNow <= SprinklerStats.deadline) state = TURN_SPRINKLER_ON;
-          if(timeNow >= SprinklerStats.deadline) state = TURN_SPRINKLER_OFF;
-        }
 
-        static uint32_t checkShouldBeOnTimer;
-        if(checkShouldBeOnTimer == 0) checkShouldBeOnTimer = millis();
-        if(millis() - checkShouldBeOnTimer > checkShouldBeOnTimeout) state = ALLOW_SLEEP;
+        if(timeNow >= SprinklerStats.targetStartTime && timeNow <= SprinklerStats.deadline) state = TURN_SPRINKLER_ON;
+        else {
+          static uint32_t checkShouldBeOnTimer;
+          if(checkShouldBeOnTimer == 0) checkShouldBeOnTimer = millis();
+          if(millis() - checkShouldBeOnTimer > checkShouldBeOnTimeout) state = TURN_SPRINKLER_OFF;
+        }
       }
       break;
 
