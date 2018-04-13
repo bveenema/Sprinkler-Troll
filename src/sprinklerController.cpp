@@ -23,6 +23,7 @@ void SprinklerController::update(void){
 
         if(timeNow >= SprinklerStats.targetStartTime && timeNow <= SprinklerStats.deadline) state = TURN_SPRINKLER_ON;
         else {
+          //TODO add if should be off
           static uint32_t checkShouldBeOnTimer;
           if(checkShouldBeOnTimer == 0) checkShouldBeOnTimer = millis();
           if(millis() - checkShouldBeOnTimer > checkShouldBeOnTimeout) state = TURN_SPRINKLER_OFF;
