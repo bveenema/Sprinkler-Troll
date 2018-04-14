@@ -23,7 +23,6 @@ void SprinklerController::update(void){
 
         if(timeNow >= SprinklerStats.targetStartTime && timeNow <= SprinklerStats.deadline) state = TURN_SPRINKLER_ON;
         else {
-          //TODO add if should be off
           static uint32_t checkShouldBeOnTimer;
           if(checkShouldBeOnTimer == 0) checkShouldBeOnTimer = millis();
           if(millis() - checkShouldBeOnTimer > checkShouldBeOnTimeout) state = TURN_SPRINKLER_OFF;
@@ -42,12 +41,14 @@ void SprinklerController::update(void){
       break;
 
     case CHECK_DURATION_EXPIRED:
-      if(timeOfDay(Time.now()) >= SprinklerStats.deadline) state = TURN_SPRINKLER_OFF;
+        if(timeOfDay(Time.now()) >= SprinklerStats.deadline) state = TURN_SPRINKLER_OFF;
 
-      static uint32_t checkDurationExpiredTimer;
-      if(checkDurationExpiredTimer == 0) checkDurationExpiredTimer = millis();
-      if(millis()-checkDurationExpiredTimer > checkDurationExpiredTimeout) state = ALLOW_SLEEP;
-
+        static uint32_t checkDurationExpiredTimer;
+        if(checkDurationExpiredTimer == 0) checkDurationExpiredTimer = millis();
+        if(millis()-checkDurationExpiredTimer > checkDurationExpiredTimeout) {
+          state = ALLOW_SLEEP;
+          checkDurationExpiredTimer = millis();
+        }
       break;
 
     case TURN_SPRINKLER_OFF:
@@ -62,6 +63,10 @@ void SprinklerController::update(void){
 
     case ALLOW_SLEEP:
       FLAG_CanSleep = true;
+      if(sprinkler_state == SPRINKLER_ON){
+        state = CHECK_DURATION_EXPIRED;
+      }
+
       break;
 
     default:
