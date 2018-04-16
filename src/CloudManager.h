@@ -27,6 +27,8 @@ public:
 
   void publishMessage(const char*,const char*);
 
+  void publishStats(void);
+
 private:
 
   void getSunriseTime(const char* cityId);

@@ -1,4 +1,21 @@
 #include "CloudManager"
+void CloudManager::publishStats(){
+  const size_t bufferSize = JSON_OBJECT_SIZE(5);
+  DynamicJsonBuffer jsonBuffer(bufferSize);
+
+  JsonObject& root = jsonBuffer.createObject();
+  root["version"] = SprinklerStats.version;
+  root["duration"] = SprinklerStats.duration;
+  root["deadline"] = SprinklerStats.deadline;
+  root["targetStartTime"] = SprinklerStats.targetStartTime;
+  root["cityID"] = SprinklerStats.cityID;
+
+  char buffer[bufferSize];
+  root.printTo(buffer);
+
+  publishManager.publish("General", buffer);
+  return;
+}
 
 void CloudManager::publishMessage(const char* destination, const char* message){
   const size_t bufferSize = JSON_OBJECT_SIZE(2)+80;
@@ -48,6 +65,7 @@ void CloudManager::getSunriseResponseHandler(const char *event, const char *data
     }
     SprinklerStats.deadline = newDeadline;
     SprinklerStats.targetStartTime = newDeadline - SprinklerStats.duration;
+    this->publishStats();
     EEPROM.put(statsAddr, SprinklerStats);
   }
 }
@@ -86,6 +104,7 @@ void CloudManager::getGoogleDocsResponseHandler(const char *event, const char *d
       sprintf(buffer, "new DURATION: %u", (unsigned int)newDuration);
       this->publishMessage("googleDocs", buffer);
       SprinklerStats.duration = newDuration;
+      this->publishStats();
       EEPROM.put(statsAddr, SprinklerStats);
     }
   } else {
