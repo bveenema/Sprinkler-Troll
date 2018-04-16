@@ -15,3 +15,25 @@ uint32_t timeOfDay(int32_t time){
 
   return time - beginOfDay;
 }
+
+uint32_t determineSleepTime(uint32_t startTime, uint32_t deadline){
+  uint32_t timeToSleep;
+
+  uint32_t timeNow = timeOfDay(Time.now());
+
+  if(deadline >= startTime){
+    if(timeNow <= deadline)
+  }
+
+  int32_t timeToDeadline = SprinklerStats.deadline - timeNow;
+  if(timeToDeadline > 0){
+    if(timeToDeadline < sleepTime){
+      timeToSleep = timeToDeadline;
+    }
+  }
+
+  // if(timeNow - SprinklerStats.deadline < sleepTime){
+  //
+  // }
+  return 0;
+}
