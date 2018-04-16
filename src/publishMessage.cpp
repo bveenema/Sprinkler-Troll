@@ -56,7 +56,4 @@ void getSunriseResponseHandler(const char *event, const char *data) {
     SprinklerStats.targetStartTime = newDeadline - SprinklerStats.duration;
     EEPROM.put(statsAddr, SprinklerStats);
   }
-
-  char buffer[20];
-  publishManager.publish("response",itoa(newDeadline,buffer,10));
 }

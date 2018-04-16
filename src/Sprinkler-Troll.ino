@@ -66,5 +66,27 @@ void loop() {
 }
 
 void getGoogleDocsResponseHandler(const char *event, const char *data) {
-  publishMessage("G-Docs_Get_Response", data);
+
+  const size_t bufferSize = JSON_OBJECT_SIZE(3) + 80;
+  DynamicJsonBuffer jsonBuffer(bufferSize);
+
+  JsonObject& root = jsonBuffer.parseObject(data);
+
+  uint32_t newDuration = root["duration"]; // 900
+  const char* name = root["name"]; // "ArkansasBlack"
+  const char* coreid = root["coreid"]; // null
+
+  if(newDuration < maxDuration){
+    if(newDuration != SprinklerStats.duration){
+      char buffer[100];
+      sprintf(buffer, "new DURATION: %i", newDuration);
+      publishMessage("googleDocs", buffer);
+      SprinklerStats.duration = newDuration;
+      EEPROM.put(statsAddr, SprinklerStats);
+    }
+  } else {
+    char buffer[100];
+    sprintf(buffer, "INVALID DURATION: %i", newDuration);
+    publishMessage("googleDocs", buffer);
+  }
 }
