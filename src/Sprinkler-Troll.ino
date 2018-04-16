@@ -7,7 +7,7 @@
 #include "sprinkler-troll-util.h"
 #include "config.h"
 #include "sprinklerController.h"
-#include "CloudManager"
+#include "CloudManager.h"
 #include <PublishManager.h>
 
 STARTUP(System.enableFeature(FEATURE_RETAINED_MEMORY));
@@ -49,7 +49,7 @@ void loop() {
 			firstAvailable = millis();
       cloudManager.onConnect();
 		}
-		if ((millis() - firstAvailable > 30000) && sprinklerController.canSleep() != NO_SLEEP) {
+		if ((millis() - firstAvailable > wakeTime) && sprinklerController.canSleep() != NO_SLEEP) {
       Particle.process();
       if(sprinklerController.canSleep() == DEEP){
         System.sleep(SLEEP_MODE_DEEP,30);

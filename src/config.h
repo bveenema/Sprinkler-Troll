@@ -10,6 +10,8 @@ const pin_t SWITCH_PIN = D3;
 const pin_t SPRINKLER_RELAY = D0;
 
 const uint32_t maxDuration = 10800;// 3 hours -> 180 minutes -> 10800 seconds
+const uint32_t sleepTime = 30; // Maximum time to sleep (seconds)
+const uint32_t wakeTime = 30; // Minimum time to be awake (seconds)
 
 
 const uint8_t statsAddr = 0;
