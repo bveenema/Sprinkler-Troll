@@ -16,6 +16,7 @@ PublishManager publishManager;
 Stats SprinklerStats;
 SprinklerController sprinklerController;
 
+// Retained variable: DO NOT change order, type or anything without a complete VIN and VBAT power cycle
 retained enum sprinkler_states sprinkler_state;
 
 void setup() {
@@ -67,15 +68,32 @@ void loop() {
 
 void getGoogleDocsResponseHandler(const char *event, const char *data) {
 
-  const size_t bufferSize = JSON_OBJECT_SIZE(3) + 80;
+  const size_t bufferSize = JSON_OBJECT_SIZE(4) + 80;
   DynamicJsonBuffer jsonBuffer(bufferSize);
 
   JsonObject& root = jsonBuffer.parseObject(data);
 
-  uint32_t newDuration = root["duration"]; // 900
-  const char* name = root["name"]; // "ArkansasBlack"
-  const char* coreid = root["coreid"]; // null
+  uint32_t newDuration = root["duration"];
+  uint32_t newCityID = root["cityID"];
+  // const char* name = root["name"];
+  // const char* coreid = root["coreid"];
 
+  // Check that newCityID is 6 or 7 digit integer
+  if(newCityID >= 100000 && newCityID <= 9999999){
+    if(newCityID != SprinklerStats.cityID){
+      char buffer[100];
+      sprintf(buffer, "new City ID: %i", newCityID);
+      publishMessage("googleDocs", buffer);
+      SprinklerStats.cityID = newCityID;
+      EEPROM.put(statsAddr, SprinklerStats);
+    }
+  } else {
+    char buffer[100];
+    sprintf(buffer, "INVALID CITY ID: %i", newCityID);
+    publishMessage("googleDocs", buffer);
+  }
+
+  // Check that duration is valid number
   if(newDuration < maxDuration){
     if(newDuration != SprinklerStats.duration){
       char buffer[100];
