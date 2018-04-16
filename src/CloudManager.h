@@ -31,9 +31,9 @@ public:
 
 private:
 
+  uint32_t calcStartTime(uint32_t deadline, uint32_t duration);
   void getSunriseTime(const char* cityId);
   void getSunriseTime(uint32_t cityId);
   void getSunriseResponseHandler(const char *, const char *);
   void getGoogleDocsResponseHandler(const char *event, const char *data);
-
 };

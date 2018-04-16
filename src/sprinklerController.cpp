@@ -21,8 +21,18 @@ void SprinklerController::update(void){
     case CHECK_SHOULD_BE_ON: {
         uint32_t timeNow = timeOfDay(Time.now());
 
-        if(timeNow >= SprinklerStats.targetStartTime && timeNow <= SprinklerStats.deadline) state = TURN_SPRINKLER_ON;
-        else {
+        // if startTime and deadline are in same day
+        if(SprinklerStats.targetStartTime <= SprinklerStats.deadline){
+          if(timeNow >= SprinklerStats.targetStartTime && timeNow <= SprinklerStats.deadline){
+            state = TURN_SPRINKLER_ON;
+          }
+        }else { // if startTime is previous day from deadline
+          if(timeNow >= SprinklerStats.targetStartTime || timeNow <= SprinklerStats.deadline) {
+            state = TURN_SPRINKLER_ON;
+          }
+        }
+
+        if(state != TURN_SPRINKLER_ON){
           static uint32_t checkShouldBeOnTimer;
           if(checkShouldBeOnTimer == 0) checkShouldBeOnTimer = millis();
           if(millis() - checkShouldBeOnTimer > checkShouldBeOnTimeout) state = TURN_SPRINKLER_OFF;
@@ -32,7 +42,9 @@ void SprinklerController::update(void){
 
     case TURN_SPRINKLER_ON:
       if(sprinkler_state == SPRINKLER_OFF){
-        cloudManager.publishMessage("googleDocs","Turning sprinkler ON");
+        char buffer[40];
+        sprintf(buffer, "Turning sprinkler ON: %u", timeOfDay(Time.now()));
+        cloudManager.publishMessage("googleDocs",buffer);
       }
       sprinkler_state = SPRINKLER_ON;
       digitalWrite(SPRINKLER_RELAY, sprinkler_state);
@@ -41,7 +53,7 @@ void SprinklerController::update(void){
       break;
 
     case CHECK_DURATION_EXPIRED:
-        if(timeOfDay(Time.now()) >= SprinklerStats.deadline) state = TURN_SPRINKLER_OFF;
+        if(timeOfDay(Time.now()) > SprinklerStats.deadline) state = TURN_SPRINKLER_OFF;
 
         static uint32_t checkDurationExpiredTimer;
         if(checkDurationExpiredTimer == 0) checkDurationExpiredTimer = millis();
@@ -53,7 +65,9 @@ void SprinklerController::update(void){
 
     case TURN_SPRINKLER_OFF:
       if(sprinkler_state == SPRINKLER_ON){
-        cloudManager.publishMessage("googleDocs","Turning sprinkler OFF");
+        char buffer[40];
+        sprintf(buffer, "Turning sprinkler OFF: %u", timeOfDay(Time.now()));
+        cloudManager.publishMessage("googleDocs",buffer);
       }
       sprinkler_state = SPRINKLER_OFF;
       digitalWrite(SPRINKLER_RELAY, sprinkler_state);

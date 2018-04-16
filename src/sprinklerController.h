@@ -2,7 +2,7 @@
 
 #include "application.h"
 #include "config.h"
-#include "CloudManager"
+#include "CloudManager.h"
 
 extern Stats SprinklerStats;
 extern CloudManager cloudManager;

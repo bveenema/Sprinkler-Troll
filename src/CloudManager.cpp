@@ -1,4 +1,5 @@
-#include "CloudManager"
+#include "CloudManager.h"
+
 void CloudManager::publishStats(){
   const size_t bufferSize = JSON_OBJECT_SIZE(5);
   DynamicJsonBuffer jsonBuffer(bufferSize);
@@ -37,7 +38,7 @@ void CloudManager::getSunriseTime(const char* cityId){
   DynamicJsonBuffer jsonBuffer(bufferSize);
 
   JsonObject& root = jsonBuffer.createObject();
-  root["cityId"] = cityId; //5084633
+  root["cityId"] = cityId;
 
   char buffer[bufferSize];
   root.printTo(buffer);
@@ -49,7 +50,7 @@ void CloudManager::getSunriseTime(const char* cityId){
 void CloudManager::getSunriseTime(uint32_t cityId){
   char sCityId[10];
   itoa(cityId, sCityId, 10);
-  getSunriseTime(sCityId);
+  this->getSunriseTime(sCityId);
   return;
 }
 
@@ -60,11 +61,11 @@ void CloudManager::getSunriseResponseHandler(const char *event, const char *data
     // only log change if greater than 60 seconds
     if((newDeadline >= (SprinklerStats.deadline + 5)) || (newDeadline <= (SprinklerStats.deadline - 5))){
       char buffer[100];
-      sprintf(buffer, "new DEADLINE: %u", newDeadline);
+      sprintf(buffer, "new DEADLINE: %u", (unsigned int)newDeadline);
       this->publishMessage("googleDocs", buffer);
     }
     SprinklerStats.deadline = newDeadline;
-    SprinklerStats.targetStartTime = newDeadline - SprinklerStats.duration;
+    SprinklerStats.targetStartTime = this->calcStartTime(SprinklerStats.deadline,SprinklerStats.duration);
     this->publishStats();
     EEPROM.put(statsAddr, SprinklerStats);
   }
@@ -89,6 +90,7 @@ void CloudManager::getGoogleDocsResponseHandler(const char *event, const char *d
       sprintf(buffer, "new City ID: %u", (unsigned int)newCityID);
       this->publishMessage("googleDocs", buffer);
       SprinklerStats.cityID = newCityID;
+      this->getSunriseTime(SprinklerStats.cityID);
       EEPROM.put(statsAddr, SprinklerStats);
     }
   } else {
@@ -98,12 +100,13 @@ void CloudManager::getGoogleDocsResponseHandler(const char *event, const char *d
   }
 
   // Check that duration is valid number
-  if(newDuration < maxDuration){
+  if(newDuration <= maxDuration){
     if(newDuration != SprinklerStats.duration){
       char buffer[100];
       sprintf(buffer, "new DURATION: %u", (unsigned int)newDuration);
       this->publishMessage("googleDocs", buffer);
       SprinklerStats.duration = newDuration;
+      SprinklerStats.targetStartTime = this->calcStartTime(SprinklerStats.deadline,SprinklerStats.duration);
       this->publishStats();
       EEPROM.put(statsAddr, SprinklerStats);
     }
@@ -111,5 +114,14 @@ void CloudManager::getGoogleDocsResponseHandler(const char *event, const char *d
     char buffer[100];
     sprintf(buffer, "INVALID DURATION: %u", (unsigned int)newDuration);
     this->publishMessage("googleDocs", buffer);
+  }
+}
+
+uint32_t CloudManager::calcStartTime(uint32_t deadline, uint32_t duration){
+  uint32_t lenOfDay = 86400; // length of one day in seconds (ignore leap seconds)
+  if(duration <= deadline){
+    return deadline - duration;
+  } else {
+    return lenOfDay + (deadline - duration);
   }
 }
