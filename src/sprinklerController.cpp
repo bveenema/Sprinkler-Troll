@@ -32,7 +32,7 @@ void SprinklerController::update(void){
 
     case TURN_SPRINKLER_ON:
       if(sprinkler_state == SPRINKLER_OFF){
-        publishMessage("googleDocs","Turning sprinkler ON");
+        cloudManager.publishMessage("googleDocs","Turning sprinkler ON");
       }
       sprinkler_state = SPRINKLER_ON;
       digitalWrite(SPRINKLER_RELAY, sprinkler_state);
@@ -53,7 +53,7 @@ void SprinklerController::update(void){
 
     case TURN_SPRINKLER_OFF:
       if(sprinkler_state == SPRINKLER_ON){
-        publishMessage("googleDocs","Turning sprinkler OFF");
+        cloudManager.publishMessage("googleDocs","Turning sprinkler OFF");
       }
       sprinkler_state = SPRINKLER_OFF;
       digitalWrite(SPRINKLER_RELAY, sprinkler_state);
@@ -72,7 +72,7 @@ void SprinklerController::update(void){
     default:
       char buffer[100];
       sprintf(buffer, "ERROR: State machine bad state, %i", state);
-      publishMessage("googleDocs",buffer,PROCESS);
+      cloudManager.publishMessage("googleDocs",buffer);
       state = CHECK_SHOULD_BE_ON;
       break;
   }
