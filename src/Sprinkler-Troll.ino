@@ -50,6 +50,8 @@ void loop() {
       cloudManager.onConnect();
 		}
 		if ((millis() - firstAvailable > wakeTime) && sprinklerController.canSleep() != NO_SLEEP) {
+      uint32_t timeToSleep = determineSleepTime(timeOfDay(Time.now()), SprinklerStats.targetStartTime, SprinklerStats.deadline);
+      publishManager.publish("Time To Sleep", String(timeToSleep).c_str());
       Particle.process();
       if(sprinklerController.canSleep() == DEEP){
         System.sleep(SLEEP_MODE_DEEP,30);

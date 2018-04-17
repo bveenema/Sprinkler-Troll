@@ -16,24 +16,24 @@ uint32_t timeOfDay(int32_t time){
   return time - beginOfDay;
 }
 
-uint32_t determineSleepTime(uint32_t startTime, uint32_t deadline){
+uint32_t determineSleepTime(uint32_t timeNow, uint32_t startTime, uint32_t deadline){
   uint32_t timeToSleep;
+  const uint32_t lengthOfDay = 86400;
 
-  uint32_t timeNow = timeOfDay(Time.now());
-
-  if(deadline >= startTime){
-    if(timeNow <= deadline)
+  // calculate time to startTime and time to deadline
+  uint32_t timeToStartTime = lengthOfDay - timeNow + startTime;
+  if(timeToStartTime >= lengthOfDay){
+    timeToStartTime -= lengthOfDay;
   }
 
-  int32_t timeToDeadline = SprinklerStats.deadline - timeNow;
-  if(timeToDeadline > 0){
-    if(timeToDeadline < sleepTime){
-      timeToSleep = timeToDeadline;
-    }
+  uint32_t timeToDeadline = lengthOfDay - timeNow + deadline;
+  if(timeToDeadline >= lengthOfDay){
+    timeToDeadline -= lengthOfDay;
   }
 
-  // if(timeNow - SprinklerStats.deadline < sleepTime){
-  //
-  // }
-  return 0;
+  // Get lesser of time to startTime and time to deadline
+  timeToSleep = min(timeToStartTime, timeToDeadline);
+
+  // return lesser of timeToSleep and sleepTime;
+  return min(timeToSleep, sleepTime);
 }
