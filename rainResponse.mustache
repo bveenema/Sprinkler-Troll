@@ -1,0 +1,20 @@
+
+{{! ALL values}}
+[{{#list}}
+{{rain.3h}}{{^rain.3h}}0{{/rain.3h}},
+{{/list}}]
+
+
+{{! First 8 values (24 hous)}}
+[{{list.0.rain.3h}}{{^list.0.rain.3h}}0{{/list.0.rain.3h}},
+{{list.1.rain.3h}}{{^list.1.rain.3h}}0{{/list.1.rain.3h}},
+{{list.2.rain.3h}}{{^list.2.rain.3h}}0{{/list.2.rain.3h}},
+{{list.3.rain.3h}}{{^list.3.rain.3h}}0{{/list.3.rain.3h}},
+{{list.4.rain.3h}}{{^list.4.rain.3h}}0{{/list.4.rain.3h}},
+{{list.5.rain.3h}}{{^list.5.rain.3h}}0{{/list.5.rain.3h}},
+{{list.6.rain.3h}}{{^list.6.rain.3h}}0{{/list.6.rain.3h}},
+{{list.7.rain.3h}}{{^list.7.rain.3h}}0{{/list.7.rain.3h}}]
+
+
+{{! First 8 values, no \n}}
+[{{list.0.rain.3h}}{{^list.0.rain.3h}}0{{/list.0.rain.3h}},{{list.1.rain.3h}}{{^list.1.rain.3h}}0{{/list.1.rain.3h}},{{list.2.rain.3h}}{{^list.2.rain.3h}}0{{/list.2.rain.3h}},{{list.3.rain.3h}}{{^list.3.rain.3h}}0{{/list.3.rain.3h}},{{list.4.rain.3h}}{{^list.4.rain.3h}}0{{/list.4.rain.3h}},{{list.5.rain.3h}}{{^list.5.rain.3h}}0{{/list.5.rain.3h}},{{list.6.rain.3h}}{{^list.6.rain.3h}}0{{/list.6.rain.3h}},{{list.7.rain.3h}}{{^list.7.rain.3h}}0{{/list.7.rain.3h}}]
