@@ -49,7 +49,8 @@ void loop() {
 			firstAvailable = millis();
       cloudManager.onConnect();
 		}
-		if ((millis() - firstAvailable > wakeTime) && sprinklerController.canSleep() != NO_SLEEP) {
+		if ((millis() - firstAvailable > wakeTime*1000) && sprinklerController.canSleep() != NO_SLEEP) {
+      Serial.printlnf("Time Awake: %u", millis()-firstAvailable);
       uint32_t timeToSleep = determineSleepTime(timeOfDay(Time.now()), SprinklerStats.targetStartTime, SprinklerStats.deadline);
       publishManager.publish("Time To Sleep", String(timeToSleep).c_str());
       Particle.process();
@@ -64,4 +65,6 @@ void loop() {
 	else {
 		firstAvailable = 0;
 	}
+  Serial.printlnf("firstAvailable: %u, cloudReady: %u",firstAvailable, cloudReady);
+  delay(500);
 }

@@ -54,6 +54,27 @@ void CloudManager::getSunriseTime(uint32_t cityId){
   return;
 }
 
+void CloudManager::getRain24Hours(const char* cityId){
+  const size_t bufferSize = JSON_OBJECT_SIZE(1);
+  DynamicJsonBuffer jsonBuffer(bufferSize);
+
+  JsonObject& root = jsonBuffer.createObject();
+  root["cityId"] = cityId;
+
+  char buffer[bufferSize];
+  root.printTo(buffer);
+
+  publishManager.publish("getRain24Hours", buffer);
+  return;
+}
+
+void CloudManager::getRain24Hours(uint32_t cityId){
+  char sCityId[10];
+  itoa(cityId, sCityId, 10);
+  this->getRain24Hours(sCityId);
+  return;
+}
+
 void CloudManager::getSunriseResponseHandler(const char *event, const char *data) {
   uint32_t newDeadline = timeOfDay(atoi(data));
 
@@ -115,6 +136,26 @@ void CloudManager::getGoogleDocsResponseHandler(const char *event, const char *d
     sprintf(buffer, "INVALID DURATION: %u", (unsigned int)newDuration);
     this->publishMessage("googleDocs", buffer);
   }
+}
+
+void CloudManager::getRain24HoursResHandler(const char *event, const char *data){
+  const size_t bufferSize = JSON_ARRAY_SIZE(8) + 80;
+  DynamicJsonBuffer jsonBuffer(bufferSize);
+
+  JsonArray& root = jsonBuffer.parseArray(data);
+
+  JsonArray& root_ = root;
+  float root_0 = root_[0]; // 0.69092
+  float root_1 = root_[1]; // 0.69092
+  float root_2 = root_[2]; // 0.69092
+  float root_3 = root_[3]; // 0.6909
+  float sum = 0;
+  for(uint8_t i=0; i<8; i++){
+    float root = root_[i];
+    sum = sum + root;
+  }
+  this->publishMessage("Rain Response", data);
+  this->publishMessage("Rain Response", String(sum).c_str());
 }
 
 uint32_t CloudManager::calcStartTime(uint32_t deadline, uint32_t duration){
