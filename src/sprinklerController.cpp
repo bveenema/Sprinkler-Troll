@@ -53,8 +53,13 @@ void SprinklerController::update(void){
       break;
 
     case CHECK_DURATION_EXPIRED:
-        if(timeOfDay(Time.now()) > SprinklerStats.deadline) state = TURN_SPRINKLER_OFF;
-
+        // if startTime and deadline are in same day
+        if(SprinklerStats.targetStartTime <= SprinklerStats.deadline){
+          if(timeOfDay(Time.now()) > SprinklerStats.deadline) state = TURN_SPRINKLER_OFF;
+        }else { // if startTime is previous day from deadline
+          uint32_t timeNow = timeOfDay(Time.now());
+          if(timeNow < SprinklerStats.targetStartTime && timeNow > SprinklerStats.deadline)  state = TURN_SPRINKLER_OFF;
+        }
         static uint32_t checkDurationExpiredTimer;
         if(checkDurationExpiredTimer == 0) checkDurationExpiredTimer = millis();
         if(millis()-checkDurationExpiredTimer > checkDurationExpiredTimeout) {
