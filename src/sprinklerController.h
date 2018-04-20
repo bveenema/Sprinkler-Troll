@@ -7,9 +7,6 @@
 extern Stats SprinklerStats;
 extern CloudManager cloudManager;
 
-// ON = 0, SPRINKLER_OFF = 1 handy trick as relay is "ON" when pin is "LOW"
-enum sprinkler_states { SPRINKLER_ON, SPRINKLER_OFF };
-
 extern retained enum sprinkler_states sprinkler_state;
 
 class SprinklerController{

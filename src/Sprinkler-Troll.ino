@@ -47,7 +47,7 @@ void loop() {
 	if (cloudReady) {
 		if (firstAvailable == 0) {
 			firstAvailable = millis();
-      cloudManager.onConnect();
+      cloudManager.onConnect(sprinkler_state);
 		}
 		if ((millis() - firstAvailable > wakeTime*1000) && sprinklerController.canSleep() != NO_SLEEP) {
       Serial.printlnf("Time Awake: %u", millis()-firstAvailable);
@@ -65,6 +65,10 @@ void loop() {
 	else {
 		firstAvailable = 0;
 	}
-  Serial.printlnf("firstAvailable: %u, cloudReady: %u",firstAvailable, cloudReady);
-  delay(500);
+
+  static uint32_t printTime;
+  if(millis() - printTime > 1000){
+    printTime = millis();
+    Serial.printlnf("I'm Alive: %u", printTime);
+  }
 }

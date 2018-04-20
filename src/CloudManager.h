@@ -19,8 +19,8 @@ public:
     Particle.subscribe("hook-response/getRain24Hours", &CloudManager::getRain24HoursResHandler, this, MY_DEVICES);
   }
 
-  void onConnect(){
-    getSunriseTime(SprinklerStats.cityID);
+  void onConnect(enum sprinkler_states state){
+    if(state == SPRINKLER_OFF) getSunriseTime(SprinklerStats.cityID);
     getRain24Hours(SprinklerStats.cityID);
     publishManager.publish("getGoogleDocs","null");
   }

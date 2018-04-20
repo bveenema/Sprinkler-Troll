@@ -34,4 +34,7 @@ const Stats defaultStats = {
 
 enum sleep_types { NO_SLEEP, WIFI_ONLY, DEEP };
 
+// ON = 0, SPRINKLER_OFF = 1 handy trick as relay is "ON" when pin is "LOW"
+enum sprinkler_states { SPRINKLER_ON, SPRINKLER_OFF };
+
 #endif

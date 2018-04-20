@@ -16,6 +16,9 @@ void SprinklerController::update(void){
 
   switch(state){
     case INIT:
+      cloudManager.publishMessage("googleDocs","State is INIT");
+      delay(2000);
+      this->begin();
       break;
 
     case CHECK_SHOULD_BE_ON: {
