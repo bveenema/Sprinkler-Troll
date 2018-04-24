@@ -54,7 +54,7 @@ void CloudManager::getSunriseTime(uint32_t cityId){
   return;
 }
 
-void CloudManager::getRain24Hours(const char* cityId){
+/* void CloudManager::getRain24Hours(const char* cityId){
   const size_t bufferSize = JSON_OBJECT_SIZE(1);
   DynamicJsonBuffer jsonBuffer(bufferSize);
 
@@ -73,7 +73,7 @@ void CloudManager::getRain24Hours(uint32_t cityId){
   itoa(cityId, sCityId, 10);
   this->getRain24Hours(sCityId);
   return;
-}
+} */
 
 void CloudManager::getSunriseResponseHandler(const char *event, const char *data) {
   uint32_t newDeadline = timeOfDay(atoi(data));
@@ -138,7 +138,7 @@ void CloudManager::getGoogleDocsResponseHandler(const char *event, const char *d
   }
 }
 
-void CloudManager::getRain24HoursResHandler(const char *event, const char *data){
+/* void CloudManager::getRain24HoursResHandler(const char *event, const char *data){
   const size_t bufferSize = JSON_ARRAY_SIZE(8) + 80;
   DynamicJsonBuffer jsonBuffer(bufferSize);
 
@@ -156,7 +156,7 @@ void CloudManager::getRain24HoursResHandler(const char *event, const char *data)
   }
   this->publishMessage("Rain Response", data);
   this->publishMessage("Rain Response", String(sum).c_str());
-}
+}*/
 
 uint32_t CloudManager::calcStartTime(uint32_t deadline, uint32_t duration){
   uint32_t lenOfDay = 86400; // length of one day in seconds (ignore leap seconds)

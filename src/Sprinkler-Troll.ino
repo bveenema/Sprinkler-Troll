@@ -65,10 +65,4 @@ void loop() {
 	else {
 		firstAvailable = 0;
 	}
-
-  static uint32_t printTime;
-  if(millis() - printTime > 1000){
-    printTime = millis();
-    Serial.printlnf("I'm Alive: %u", printTime);
-  }
 }
