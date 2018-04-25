@@ -7,6 +7,9 @@ else
 fi
 
 
+## After compile, wait for user to press "f" key and then flash to device
+
+
 
 
 # call particle compile p --saveTo o.bin
