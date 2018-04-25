@@ -21,11 +21,10 @@ public:
 
 private:
   bool FLAG_CanSleep = false;
-  const uint32_t checkShouldBeOnTimeout = 15000;
-  const uint32_t checkDurationExpiredTimeout = 15000;
+  const uint32_t timeout = 15000;
 
   enum states_sprinkler {
-    INIT, CHECK_SHOULD_BE_ON, TURN_SPRINKLER_ON, CHECK_DURATION_EXPIRED, TURN_SPRINKLER_OFF, ALLOW_SLEEP
+    INIT, CHECK_SPRINKLER_STATE, TURN_SPRINKLER_ON, CHECK_DURATION_EXPIRED, TURN_SPRINKLER_OFF, ALLOW_SLEEP
   };
   enum states_sprinkler state = INIT;
 
