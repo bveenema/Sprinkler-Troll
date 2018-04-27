@@ -8,6 +8,7 @@
 
 extern PublishManager publishManager;
 extern Stats SprinklerStats;
+extern bool serialReady;
 
 class CloudManager {
 public:

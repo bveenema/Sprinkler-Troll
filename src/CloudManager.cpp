@@ -76,7 +76,10 @@ void CloudManager::getRain24Hours(uint32_t cityId){
 } */
 
 void CloudManager::getSunriseResponseHandler(const char *event, const char *data) {
-  uint32_t newDeadline = timeOfDay(atoi(data));
+
+  uint32_t freemem = System.freeMemory();
+  if(serialReady) Serial.printlnf("free memory - Sunrise Resp: %u", freemem);
+
   char dataStore[255];
   strcpy(dataStore, data);
 
@@ -94,9 +97,15 @@ void CloudManager::getSunriseResponseHandler(const char *event, const char *data
     this->publishStats();
     EEPROM.put(statsAddr, SprinklerStats);
   }
+
+  uint32_t freemem2 = System.freeMemory();
+  if(serialReady) Serial.printlnf("free memory - Sunrise Resp: %u", freemem2);
 }
 
 void CloudManager::getGoogleDocsResponseHandler(const char *event, const char *data) {
+
+  uint32_t freemem = System.freeMemory();
+  if(serialReady) Serial.printlnf("free memory - GDoc Resp: %u", freemem);
 
   char dataStore[255];
   strcpy(dataStore, data);
@@ -143,6 +152,9 @@ void CloudManager::getGoogleDocsResponseHandler(const char *event, const char *d
     sprintf(buffer, "INVALID DURATION: %u", (unsigned int)newDuration);
     this->publishMessage("googleDocs", buffer);
   }
+
+  uint32_t freemem2 = System.freeMemory();
+  if(serialReady) Serial.printlnf("free memory - GDoc Resp: %u", freemem2);
 }
 
 /* void CloudManager::getRain24HoursResHandler(const char *event, const char *data){

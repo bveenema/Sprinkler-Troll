@@ -17,6 +17,8 @@ CloudManager cloudManager;
 Stats SprinklerStats;
 SprinklerController sprinklerController;
 
+bool serialReady  = false;
+
 // Retained variable: DO NOT change order, type or anything without a complete VIN and VBAT power cycle
 retained enum sprinkler_states sprinkler_state;
 
@@ -39,6 +41,8 @@ void setup() {
 
 
 void loop() {
+  serialReady = Serial.isConnected();
+
 	bool cloudReady = Particle.connected();
   static uint32_t firstAvailable;
 
@@ -50,13 +54,17 @@ void loop() {
       cloudManager.onConnect(sprinkler_state);
 		}
 		if ((millis() - firstAvailable > wakeTime*1000) && sprinklerController.canSleep() != NO_SLEEP) {
-      Serial.printlnf("Time Awake: %u", millis()-firstAvailable);
+      if(serialReady) Serial.printlnf("Time Awake: %u", millis()-firstAvailable);
       uint32_t timeToSleep = determineSleepTime(timeOfDay(Time.now()), SprinklerStats.targetStartTime, SprinklerStats.deadline);
       publishManager.publish("Time To Sleep", String(timeToSleep).c_str());
       Particle.process();
       if(sprinklerController.canSleep() == DEEP){
+        uint32_t freemem = System.freeMemory();
+        if(serialReady) Serial.printlnf("free memory: %u", freemem);
         System.sleep(SLEEP_MODE_DEEP,30);
       } else {
+        uint32_t freemem = System.freeMemory();
+        if(serialReady) Serial.printlnf("free memory: %u", freemem);
         System.sleep(30);
       }
 
