@@ -10,9 +10,11 @@ void SprinklerController::begin(void){
   pinMode(SPRINKLER_RELAY, OUTPUT);
   digitalWrite(SPRINKLER_RELAY, sprinkler_state);
   state = CHECK_SPRINKLER_STATE;
+  if(serialReady) Serial.printlnf("SprinklerState: %u",state);
 }
 
 void SprinklerController::update(void){
+  static enum states_sprinkler prevState = state;
 
   switch(state){
     case INIT:
@@ -22,24 +24,25 @@ void SprinklerController::update(void){
       break;
 
     case CHECK_SPRINKLER_STATE: {
-        uint32_t timeNow = timeOfDay(Time.now());
+      uint32_t timeNow = timeOfDay(Time.now());
 
-        // if startTime and deadline are in same day
-        if(SprinklerStats.targetStartTime <= SprinklerStats.deadline){
-          if(timeNow >= SprinklerStats.targetStartTime && timeNow <= SprinklerStats.deadline){
-            state = TURN_SPRINKLER_ON;
-          }else{
-            state = TURN_SPRINKLER_OFF;
-          }
-        }else { // if startTime is previous day from deadline
-          if(timeNow >= SprinklerStats.targetStartTime || timeNow <= SprinklerStats.deadline) {
-            state = TURN_SPRINKLER_ON;
-          }else{
-            state = TURN_SPRINKLER_OFF;
-          }
+      // if startTime and deadline are in same day
+      if(SprinklerStats.targetStartTime <= SprinklerStats.deadline){
+        if(timeNow >= SprinklerStats.targetStartTime && timeNow <= SprinklerStats.deadline){
+          state = TURN_SPRINKLER_ON;
+        }else{
+          state = TURN_SPRINKLER_OFF;
+        }
+      }else { // if startTime is previous day from deadline
+        if(timeNow >= SprinklerStats.targetStartTime || timeNow <= SprinklerStats.deadline) {
+          state = TURN_SPRINKLER_ON;
+        }else{
+          state = TURN_SPRINKLER_OFF;
         }
       }
       break;
+    }
+
 
     case TURN_SPRINKLER_ON:
       if(sprinkler_state == SPRINKLER_OFF){

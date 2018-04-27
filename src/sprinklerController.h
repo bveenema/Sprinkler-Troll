@@ -9,6 +9,8 @@ extern CloudManager cloudManager;
 
 extern retained enum sprinkler_states sprinkler_state;
 
+extern bool serialReady;
+
 class SprinklerController{
 public:
   SprinklerController();
