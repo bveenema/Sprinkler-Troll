@@ -77,9 +77,13 @@ void CloudManager::getRain24Hours(uint32_t cityId){
 
 void CloudManager::getSunriseResponseHandler(const char *event, const char *data) {
   uint32_t newDeadline = timeOfDay(atoi(data));
+  char dataStore[255];
+  strcpy(dataStore, data);
+
+  uint32_t newDeadline = timeOfDay(atoi(dataStore));
 
   if(newDeadline != SprinklerStats.deadline){
-    // only log change if greater than 60 seconds
+    // only log change if greater than 5 seconds
     if((newDeadline >= (SprinklerStats.deadline + 5)) || (newDeadline <= (SprinklerStats.deadline - 5))){
       char buffer[100];
       sprintf(buffer, "new DEADLINE: %u", (unsigned int)newDeadline);
@@ -94,10 +98,13 @@ void CloudManager::getSunriseResponseHandler(const char *event, const char *data
 
 void CloudManager::getGoogleDocsResponseHandler(const char *event, const char *data) {
 
-  const size_t bufferSize = JSON_OBJECT_SIZE(4) + 80;
-  DynamicJsonBuffer jsonBuffer(bufferSize);
+  char dataStore[255];
+  strcpy(dataStore, data);
 
-  JsonObject& root = jsonBuffer.parseObject(data);
+  const size_t bufferSize = JSON_OBJECT_SIZE(4) + 80;
+  StaticJsonBuffer<bufferSize> jsonBuffer;
+
+  JsonObject& root = jsonBuffer.parseObject(dataStore);
 
   uint32_t newDuration = root["duration"];
   uint32_t newCityID = root["cityID"];
@@ -139,10 +146,14 @@ void CloudManager::getGoogleDocsResponseHandler(const char *event, const char *d
 }
 
 /* void CloudManager::getRain24HoursResHandler(const char *event, const char *data){
-  const size_t bufferSize = JSON_ARRAY_SIZE(8) + 80;
-  DynamicJsonBuffer jsonBuffer(bufferSize);
 
-  JsonArray& root = jsonBuffer.parseArray(data);
+  char dataStore[255];
+  strcpy(dataStore, data)
+
+  const size_t bufferSize = JSON_ARRAY_SIZE(8) + 80;
+  StaticJsonBuffer<bufferSize> jsonBuffer;
+
+  JsonArray& root = jsonBuffer.parseArray(dataStore);
 
   JsonArray& root_ = root;
   float root_0 = root_[0]; // 0.69092
@@ -154,7 +165,7 @@ void CloudManager::getGoogleDocsResponseHandler(const char *event, const char *d
     float root = root_[i];
     sum = sum + root;
   }
-  this->publishMessage("Rain Response", data);
+  this->publishMessage("Rain Response", dataStore);
   this->publishMessage("Rain Response", String(sum).c_str());
 }*/
 
