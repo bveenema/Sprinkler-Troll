@@ -55,17 +55,12 @@ void loop() {
       cloudManager.onConnect(sprinkler_state);
 		}
 		if ((millis() - firstAvailable > wakeTime*1000) && sprinklerController.canSleep() != NO_SLEEP) {
-      if(serialReady) Serial.printlnf("Time Awake: %u", millis()-firstAvailable);
       uint32_t timeToSleep = determineSleepTime(timeOfDay(Time.now()), SprinklerStats.targetStartTime, SprinklerStats.deadline);
       publishManager.publish("Time To Sleep", String(timeToSleep).c_str());
       Particle.process();
       if(sprinklerController.canSleep() == DEEP){
-        uint32_t freemem = System.freeMemory();
-        if(serialReady) Serial.printlnf("free memory: %u", freemem);
         System.sleep(SLEEP_MODE_DEEP,30);
       } else {
-        uint32_t freemem = System.freeMemory();
-        if(serialReady) Serial.printlnf("free memory: %u", freemem);
         System.sleep(30);
       }
 
