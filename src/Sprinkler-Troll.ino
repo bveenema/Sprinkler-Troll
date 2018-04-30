@@ -12,7 +12,7 @@
 
 STARTUP(System.enableFeature(FEATURE_RETAINED_MEMORY));
 
-PublishManager publishManager;
+PublishManager<> publishManager;
 CloudManager cloudManager;
 Stats SprinklerStats;
 SprinklerController sprinklerController;
@@ -47,6 +47,7 @@ void loop() {
   static uint32_t firstAvailable;
 
   sprinklerController.update();
+  cloudManager.update();
 
 	if (cloudReady) {
 		if (firstAvailable == 0) {

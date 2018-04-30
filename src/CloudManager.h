@@ -6,7 +6,7 @@
 #include <ArduinoJson.h>
 #include <PublishManager.h>
 
-extern PublishManager publishManager;
+extern PublishManager<> publishManager;
 extern Stats SprinklerStats;
 extern bool serialReady;
 
@@ -26,7 +26,9 @@ public:
     publishManager.publish("getGoogleDocs","null");
   }
 
-  void update();
+  void update(){
+    publishManager.process();
+  }
 
   void publishMessage(const char*,const char*);
 
