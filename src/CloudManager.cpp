@@ -43,7 +43,7 @@ void CloudManager::getSunriseTime(const char* cityId){
   char buffer[bufferSize];
   root.printTo(buffer);
 
-  publishManager.publish("getSunrise", buffer);
+  publishManager.publish("getSunriseOpenWeather", buffer);
   return;
 }
 
@@ -75,9 +75,19 @@ void CloudManager::getRain24Hours(uint32_t cityId){
   return;
 } */
 
-void CloudManager::getSunriseResponseHandler(const char *event, const char *data) {
+void CloudManager::webhookHandler(const char *event, const char *data) {
+  if(strstr(event, "getSunriseOpenWeather")){
+    this->sunriseOpenWeatherResponseHandler(event, data);
+  }
+  if(strstr(event, "getDeviceConfig")){
+    this->deviceConfigResponseHandler(event, data);
+  }
+  if(strstr(event, "getRainWunderground")){
+    this->publishMessage("General", data);
+  }
+}
 
-  uint32_t freemem = System.freeMemory();
+void CloudManager::sunriseOpenWeatherResponseHandler(const char *event, const char *data) {
 
   char dataStore[255];
   strcpy(dataStore, data);
@@ -96,13 +106,9 @@ void CloudManager::getSunriseResponseHandler(const char *event, const char *data
     this->publishStats();
     EEPROM.put(statsAddr, SprinklerStats);
   }
-
-  uint32_t freemem2 = System.freeMemory();
 }
 
-void CloudManager::getGoogleDocsResponseHandler(const char *event, const char *data) {
-
-  uint32_t freemem = System.freeMemory();
+void CloudManager::deviceConfigResponseHandler(const char *event, const char *data) {
 
   char dataStore[255];
   strcpy(dataStore, data);
@@ -149,8 +155,6 @@ void CloudManager::getGoogleDocsResponseHandler(const char *event, const char *d
     sprintf(buffer, "INVALID DURATION: %u", (unsigned int)newDuration);
     this->publishMessage("googleDocs", buffer);
   }
-
-  uint32_t freemem2 = System.freeMemory();
 }
 
 /* void CloudManager::getRain24HoursResHandler(const char *event, const char *data){
