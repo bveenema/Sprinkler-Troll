@@ -33,12 +33,15 @@ void CloudManager::publishMessage(const char* destination, const char* message){
   return;
 }
 
-void CloudManager::getSunriseTime(const char* cityId){
+void CloudManager::getSunriseOpenWeather(uint32_t cityId){
+  char sCityId[10];
+  itoa(cityId, sCityId, 10);
+
   const size_t bufferSize = JSON_OBJECT_SIZE(1);
   DynamicJsonBuffer jsonBuffer(bufferSize);
 
   JsonObject& root = jsonBuffer.createObject();
-  root["cityId"] = cityId;
+  root["cityId"] = sCityId;
 
   char buffer[bufferSize];
   root.printTo(buffer);
@@ -47,19 +50,15 @@ void CloudManager::getSunriseTime(const char* cityId){
   return;
 }
 
-void CloudManager::getSunriseTime(uint32_t cityId){
+void CloudManager::getRainOpenWeather(uint32_t cityId){
   char sCityId[10];
   itoa(cityId, sCityId, 10);
-  this->getSunriseTime(sCityId);
-  return;
-}
 
-/* void CloudManager::getRain24Hours(const char* cityId){
   const size_t bufferSize = JSON_OBJECT_SIZE(1);
   DynamicJsonBuffer jsonBuffer(bufferSize);
 
   JsonObject& root = jsonBuffer.createObject();
-  root["cityId"] = cityId;
+  root["cityId"] = sCityId;
 
   char buffer[bufferSize];
   root.printTo(buffer);
@@ -67,13 +66,6 @@ void CloudManager::getSunriseTime(uint32_t cityId){
   publishManager.publish("getRain24Hours", buffer);
   return;
 }
-
-void CloudManager::getRain24Hours(uint32_t cityId){
-  char sCityId[10];
-  itoa(cityId, sCityId, 10);
-  this->getRain24Hours(sCityId);
-  return;
-} */
 
 void CloudManager::webhookHandler(const char *event, const char *data) {
   if(strstr(event, "getSunriseOpenWeather")){
@@ -130,7 +122,7 @@ void CloudManager::deviceConfigResponseHandler(const char *event, const char *da
       sprintf(buffer, "new City ID: %u", (unsigned int)newCityID);
       this->publishMessage("googleDocs", buffer);
       SprinklerStats.cityID = newCityID;
-      this->getSunriseTime(SprinklerStats.cityID);
+      this->getSunriseOpenWeather(SprinklerStats.cityID);
       EEPROM.put(statsAddr, SprinklerStats);
     }
   } else {
@@ -157,10 +149,10 @@ void CloudManager::deviceConfigResponseHandler(const char *event, const char *da
   }
 }
 
-/* void CloudManager::getRain24HoursResHandler(const char *event, const char *data){
+void CloudManager::rainOpenWeatherResHandler(const char *event, const char *data){
 
   char dataStore[255];
-  strcpy(dataStore, data)
+  strcpy(dataStore, data);
 
   const size_t bufferSize = JSON_ARRAY_SIZE(8) + 80;
   StaticJsonBuffer<bufferSize> jsonBuffer;
@@ -179,7 +171,7 @@ void CloudManager::deviceConfigResponseHandler(const char *event, const char *da
   }
   this->publishMessage("Rain Response", dataStore);
   this->publishMessage("Rain Response", String(sum).c_str());
-}*/
+}
 
 uint32_t CloudManager::calcStartTime(uint32_t deadline, uint32_t duration){
   uint32_t lenOfDay = 86400; // length of one day in seconds (ignore leap seconds)
