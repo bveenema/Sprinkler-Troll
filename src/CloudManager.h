@@ -20,6 +20,7 @@ public:
 
   void onConnect(enum sprinkler_states state){
     if(state == SPRINKLER_OFF) getSunriseOpenWeather(SprinklerStats.cityID);
+    getRainWunderground("VT","Hartland");
     publishManager.publish("getDeviceConfig","null");
   }
 
@@ -36,8 +37,10 @@ private:
   uint32_t calcStartTime(uint32_t deadline, uint32_t duration);
   void getSunriseOpenWeather(uint32_t cityId);
   void getRainOpenWeather(uint32_t cityId);
+  void getRainWunderground(const char *state, const char *city);
   void webhookHandler(const char *, const char *);
   void sunriseOpenWeatherResponseHandler(const char *, const char *);
-  void deviceConfigResponseHandler(const char *event, const char *data);
   void rainOpenWeatherResHandler(const char *, const char *);
+  void rainWundergroundHandler(const char *, const char *);
+  void deviceConfigResponseHandler(const char *event, const char *data);
 };

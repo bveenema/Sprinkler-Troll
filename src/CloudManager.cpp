@@ -67,6 +67,12 @@ void CloudManager::getRainOpenWeather(uint32_t cityId){
   return;
 }
 
+void CloudManager::getRainWunderground(const char* state, const char* city){
+  char buffer[255];
+  sprintf(buffer, "{\"state\":\"%s\",\"city\":\"%s\"}",state,city);
+  publishManager.publish("getRainWunderground",buffer);
+}
+
 void CloudManager::webhookHandler(const char *event, const char *data) {
   if(strstr(event, "getSunriseOpenWeather")){
     this->sunriseOpenWeatherResponseHandler(event, data);
