@@ -18,3 +18,7 @@
 
 {{! First 8 values, no \n}}
 [{{list.0.rain.3h}}{{^list.0.rain.3h}}0{{/list.0.rain.3h}},{{list.1.rain.3h}}{{^list.1.rain.3h}}0{{/list.1.rain.3h}},{{list.2.rain.3h}}{{^list.2.rain.3h}}0{{/list.2.rain.3h}},{{list.3.rain.3h}}{{^list.3.rain.3h}}0{{/list.3.rain.3h}},{{list.4.rain.3h}}{{^list.4.rain.3h}}0{{/list.4.rain.3h}},{{list.5.rain.3h}}{{^list.5.rain.3h}}0{{/list.5.rain.3h}},{{list.6.rain.3h}}{{^list.6.rain.3h}}0{{/list.6.rain.3h}},{{list.7.rain.3h}}{{^list.7.rain.3h}}0{{/list.7.rain.3h}}]
+
+
+{{! Wunderground }}
+{{#forecast.simpleforecast.forecastday.0}}{"pop":{{pop}},"qpf":{{qpf_allday.in}}}{{/forecast.simpleforecast.forecastday.0}}
