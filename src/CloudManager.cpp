@@ -111,15 +111,45 @@ void CloudManager::deviceConfigResponseHandler(const char *event, const char *da
   char dataStore[255];
   strcpy(dataStore, data);
 
-  const size_t bufferSize = JSON_OBJECT_SIZE(4) + 80;
+  const size_t bufferSize = JSON_OBJECT_SIZE(6) + 120;
   StaticJsonBuffer<bufferSize> jsonBuffer;
 
   JsonObject& root = jsonBuffer.parseObject(dataStore);
 
   uint32_t newDuration = root["duration"];
   uint32_t newCityID = root["cityID"];
+  const char* newStateName = root["stateName"];
+  const char* newCityName = root["cityName"];
   // const char* name = root["name"];
   // const char* coreid = root["coreid"];
+
+  bool FLAG_cityNameChanged = 0;
+  bool FLAG_stateNameChanged = 0;
+
+  if(strcmp(newStateName, SprinklerStats.stateName) != 0) FLAG_stateNameChanged = 1;
+  if(strcmp(newCityName, SprinklerStats.cityName) != 0) FLAG_cityNameChanged = 1;
+
+  bool FLAG_cityAndStateChanged = FLAG_cityNameChanged & FLAG_stateNameChanged;
+
+  if(FLAG_stateNameChanged){
+    char buffer[100];
+    sprintf(buffer, "new State Name: %s", newStateName);
+    this->publishMessage("googleDocs", buffer);
+    strcpy(SprinklerStats.stateName, newStateName);
+    if(!FLAG_cityAndStateChanged){
+      this->getRainWunderground(SprinklerStats.stateName, SprinklerStats.cityName);
+      EEPROM.put(statsAddr, SprinklerStats);
+    }
+  }
+  
+  if(FLAG_cityNameChanged){
+    char buffer[100];
+    sprintf(buffer, "new City Name: %s", newCityName);
+    this->publishMessage("googleDocs", buffer);
+    strcpy(SprinklerStats.cityName, newCityName);
+    this->getRainWunderground(SprinklerStats.stateName, SprinklerStats.cityName);
+    EEPROM.put(statsAddr, SprinklerStats);
+  }
 
   // Check that newCityID is 6 or 7 digit integer
   if(newCityID >= 100000 && newCityID <= 9999999){

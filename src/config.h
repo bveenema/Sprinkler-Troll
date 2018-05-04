@@ -16,12 +16,17 @@ const uint32_t wakeTime = 30; // Minimum time to be awake (seconds)
 
 const uint8_t statsAddr = 0;
 
+const uint8_t maxCityCharacters = 25;
+const uint8_t maxStateCharacters = 25; // "state" is used in the USA-centric context such as California and in the self-governing body context, such as "Russia"
+
 struct Stats {
   uint8_t version; // 0
   uint32_t duration; // seconds
   uint32_t deadline; // seconds from midnight (sunrise)
   uint32_t targetStartTime; // seconds from midnight
   uint32_t cityID; // Open Weather API city ID
+  char stateName[maxStateCharacters];
+  char cityName[maxCityCharacters];
 };
 
 const Stats defaultStats = {
@@ -29,7 +34,9 @@ const Stats defaultStats = {
                       900, // 15 minutes
                       37800, // 6:30am EST
                       36900, // 6:15am EST
-                      5084633 //Claremont NH
+                      5084633, //Claremont NH
+                      "MI",
+                      "Grand%20Rapids"
                     };
 
 enum sleep_types { NO_SLEEP, WIFI_ONLY, DEEP };

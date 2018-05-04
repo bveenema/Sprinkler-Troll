@@ -20,7 +20,7 @@ public:
 
   void onConnect(enum sprinkler_states state){
     if(state == SPRINKLER_OFF) getSunriseOpenWeather(SprinklerStats.cityID);
-    getRainWunderground("VT","Hartland");
+    getRainWunderground(SprinklerStats.stateName,SprinklerStats.cityName);
     publishManager.publish("getDeviceConfig","null");
   }
 
