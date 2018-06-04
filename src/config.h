@@ -22,6 +22,8 @@ struct Stats {
   uint32_t deadline; // seconds from midnight (sunrise)
   uint32_t targetStartTime; // seconds from midnight
   uint32_t cityID; // Open Weather API city ID
+  char state[3]; // State/Country abbreviation
+  char city[20]; // City Name
 };
 
 const Stats defaultStats = {
@@ -30,6 +32,8 @@ const Stats defaultStats = {
                       37800, // 6:30am EST
                       36900, // 6:15am EST
                       5084633 //Claremont NH
+                      "VT",
+                      "Hartland"
                     };
 
 enum sleep_types { NO_SLEEP, WIFI_ONLY, DEEP };

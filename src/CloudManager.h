@@ -5,8 +5,10 @@
 #include "config.h"
 #include <ArduinoJson.h>
 #include <PublishManager.h>
+#include <ParticlePromise.h>
 
 extern PublishManager<> publishManager;
+extern ParticlePromise promise;
 extern Stats SprinklerStats;
 extern bool serialReady;
 
@@ -15,13 +17,26 @@ public:
   CloudManager(){}
 
   void begin(){
-    Particle.subscribe(System.deviceID() + "/hook-response", &CloudManager::webhookHandler, this, MY_DEVICES);
+    promise.enable();
   }
 
   void onConnect(enum sprinkler_states state){
-    if(state == SPRINKLER_OFF) getSunriseOpenWeather(SprinklerStats.cityID);
-    getRainWunderground("VT","Hartland");
-    publishManager.publish("getDeviceConfig","null");
+    if(state == SPRINKLER_OFF) {
+      promise.create(&CloudManager::getSunriseOpenWeather, this, "sunrise-time-ow")
+             .then(&CloudManager::sunriseOpenWeatherResponseHandler, this);
+    }
+    promise.create([]{
+      char buffer[255];
+      sprintf(buffer, "{\"state\":\"%s\",\"city\":\"%s\"}",SprinklerStats.state,SprinklerStats.city);
+      publishManager.publish("getRainWunderground",buffer);
+    }."rain-wgnd").then([](const char* event, const char* data){
+      this->publishMessage("General", data);
+    });
+    //publishManager.publish("getDeviceConfig","null");
+    promise.create([]{
+              publishManager.publish("getDeviceConfig","null")
+            },"device-config")
+            .then(&CloudManager::deviceConfigResponseHandler, this);
   }
 
   void update(){
@@ -35,7 +50,7 @@ public:
 private:
 
   uint32_t calcStartTime(uint32_t deadline, uint32_t duration);
-  void getSunriseOpenWeather(uint32_t cityId);
+  void getSunriseOpenWeather();
   void getRainOpenWeather(uint32_t cityId);
   void getRainWunderground(const char *state, const char *city);
   void webhookHandler(const char *, const char *);

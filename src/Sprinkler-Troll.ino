@@ -9,10 +9,12 @@
 #include "sprinklerController.h"
 #include "CloudManager.h"
 #include <PublishManager.h>
+#include <ParticlePromise.h>
 
 STARTUP(System.enableFeature(FEATURE_RETAINED_MEMORY));
 
 PublishManager<> publishManager;
+ParticlePromise promise;
 CloudManager cloudManager;
 Stats SprinklerStats;
 SprinklerController sprinklerController;

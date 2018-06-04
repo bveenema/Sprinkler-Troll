@@ -33,9 +33,9 @@ void CloudManager::publishMessage(const char* destination, const char* message){
   return;
 }
 
-void CloudManager::getSunriseOpenWeather(uint32_t cityId){
+void CloudManager::getSunriseOpenWeather(){
   char sCityId[10];
-  itoa(cityId, sCityId, 10);
+  itoa(SprinklerStats.cityID, sCityId, 10);
 
   const size_t bufferSize = JSON_OBJECT_SIZE(1);
   DynamicJsonBuffer jsonBuffer(bufferSize);
@@ -50,7 +50,7 @@ void CloudManager::getSunriseOpenWeather(uint32_t cityId){
   return;
 }
 
-void CloudManager::getRainOpenWeather(uint32_t cityId){
+void CloudManager::getRainOpenWeather(uint32_t city){
   char sCityId[10];
   itoa(cityId, sCityId, 10);
 
