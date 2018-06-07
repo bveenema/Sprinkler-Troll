@@ -5,7 +5,7 @@
 #include "CloudManager.h"
 
 extern Stats SprinklerStats;
-extern CloudManager cloudManager;
+extern cloudManager CloudManager;
 
 extern retained enum sprinkler_states sprinkler_state;
 

@@ -15,7 +15,7 @@ STARTUP(System.enableFeature(FEATURE_RETAINED_MEMORY));
 
 PublishManager<> publishManager;
 ParticlePromise promise;
-CloudManager cloudManager;
+cloudManager CloudManager;
 Stats SprinklerStats;
 SprinklerController sprinklerController;
 
@@ -28,7 +28,7 @@ void setup() {
   Serial.begin(115200);
 
   sprinklerController.begin();
-  cloudManager.begin();
+  CloudManager.begin();
 
   pinMode(SWITCH_PIN,INPUT_PULLUP);
 
@@ -49,12 +49,12 @@ void loop() {
   static uint32_t firstAvailable;
 
   sprinklerController.update();
-  cloudManager.update();
+  CloudManager.update();
 
 	if (cloudReady) {
 		if (firstAvailable == 0) {
 			firstAvailable = millis();
-      cloudManager.onConnect(sprinkler_state);
+      CloudManager.onConnect(sprinkler_state);
 		}
 		if ((millis() - firstAvailable > wakeTime*1000) && sprinklerController.canSleep() != NO_SLEEP) {
       uint32_t timeToSleep = determineSleepTime(timeOfDay(Time.now()), SprinklerStats.targetStartTime, SprinklerStats.deadline);
