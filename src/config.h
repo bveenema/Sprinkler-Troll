@@ -9,9 +9,9 @@
 const pin_t SWITCH_PIN = D3;
 const pin_t SPRINKLER_RELAY = D0;
 
-const uint32_t maxDuration = 10800;// 3 hours -> 180 minutes -> 10800 seconds
-const uint32_t sleepTime = 3600; // Maximum time to sleep (seconds)
-const uint32_t wakeTime = 30; // Minimum time to be awake (seconds)
+const int maxDuration = 10800;// 3 hours -> 180 minutes -> 10800 seconds
+const int sleepTime = 3600; // Maximum time to sleep (seconds)
+const int wakeTime = 30; // Minimum time to be awake (seconds)
 
 
 const uint8_t statsAddr = 0;
@@ -21,10 +21,10 @@ const uint8_t maxStateCharacters = 25; // "state" is used in the USA-centric con
 
 struct Stats {
   uint8_t version; // 0
-  uint32_t duration; // seconds
-  uint32_t deadline; // seconds from midnight (sunrise)
-  uint32_t targetStartTime; // seconds from midnight
-  uint32_t cityID; // Open Weather API city ID
+  int duration; // seconds
+  int deadline; // seconds from midnight (sunrise)
+  int targetStartTime; // seconds from midnight
+  int timeZone;
   char stateName[maxStateCharacters];
   char cityName[maxCityCharacters];
 };
@@ -34,7 +34,7 @@ const Stats defaultStats = {
                       900, // 15 minutes
                       37800, // 6:30am EST
                       36900, // 6:15am EST
-                      5084633 //Claremont NH
+                      -5, // EDT
                       "VT",
                       "Hartland"
                     };
