@@ -1,0 +1,10 @@
+{
+    "event": "getSunriseWunderground",
+    "url": "https://api.wunderground.com/api/6fe90b8e19b23261/astronomy/q/{{state}}/{{city}}.json",
+    "requestType": "GET",
+    "noDefaults": true,
+    "rejectUnauthorized": true,
+    "responseTopic": "{{{PARTICLE_DEVICE_ID}}}/promise-response/success/rain",
+    "errorResponseTopic": "{{{PARTICLE_DEVICE_ID}}}/promise-response/error/rain",
+    "responseTemplate": "{{#sun_phase.sunrise}}{\"hour\":{{hour}},\"minute\":{{minute}}}{{/forecast.simpleforecast.forecastday.0}}"
+}
