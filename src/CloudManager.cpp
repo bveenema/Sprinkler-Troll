@@ -26,6 +26,18 @@ void cloudManager::publishStats(){
   return;
 }
 
+void cloudManager::message(const char* destination, const char* message){
+  char buffer[255];
+  unsigned int currentTime = Time.now();
+  snprintf(buffer, 255, "{\"message\": \"%s\", \"time\": \"%u\"}", message, currentTime);
+
+  publishManager.publish(destination, buffer);
+}
+
+void cloudManager::log(const char* message){
+  this->message("googleDocs", message);
+}
+
 void cloudManager::getDeviceConfig(){
   promise.create([]{
             publishManager.publish("getDeviceConfig","null");
@@ -63,7 +75,7 @@ void cloudManager::getRain(){
             publishManager.publish("getRainWunderground",buffer);
           }, "rain")
           .then([this](const char* event, const char* data){
-            this->publishMessage("General", data);
+            this->message("General", data);
           })
           .finally([this]{
             FLAG_rainForecastComplete = true;
@@ -95,7 +107,7 @@ void cloudManager::HANDLER_deviceConfig(const char *event, const char *data) {
   if(FLAG_locationChanged){
     char buffer[255];
     sprintf(buffer, "new Location: %s, %s", newStateName, newCityName);
-    this->publishMessage("googleDocs", buffer);
+    this->log(buffer);
     strcpy(SprinklerStats.stateName, newStateName);
     strcpy(SprinklerStats.cityName, newCityName);
     EEPROM.put(statsAddr, SprinklerStats);
@@ -106,7 +118,7 @@ void cloudManager::HANDLER_deviceConfig(const char *event, const char *data) {
     if(newDuration != SprinklerStats.duration){
       char buffer[100];
       sprintf(buffer, "new DURATION: %u", (unsigned int)newDuration);
-      this->publishMessage("googleDocs", buffer);
+      this->log(buffer);
       SprinklerStats.duration = newDuration;
       SprinklerStats.targetStartTime = this->calcStartTime(SprinklerStats.deadline,SprinklerStats.duration);
       this->publishStats();
@@ -115,7 +127,7 @@ void cloudManager::HANDLER_deviceConfig(const char *event, const char *data) {
   } else {
     char buffer[100];
     sprintf(buffer, "INVALID DURATION: %u", (unsigned int)newDuration);
-    this->publishMessage("googleDocs", buffer);
+    this->log(buffer);
   }
 }
 
@@ -137,7 +149,7 @@ void cloudManager::HANDLER_getSunrise(const char *event, const char *data){
     if((newDeadline >= (SprinklerStats.deadline + 5)) || (newDeadline <= (SprinklerStats.deadline - 5))){
       char buffer[100];
       sprintf(buffer, "new DEADLINE: %u", (unsigned int)newDeadline);
-      this->publishMessage("googleDocs", buffer);
+      this->log(buffer);
     }
     SprinklerStats.deadline = newDeadline;
     SprinklerStats.targetStartTime = this->calcStartTime(SprinklerStats.deadline,SprinklerStats.duration);

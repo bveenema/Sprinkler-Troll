@@ -41,7 +41,9 @@ public:
     promise.process();
   }
 
-  void publishMessage(const char* event, const char* data){}
+  void message(const char* event, const char* data){}
+
+  void log(const char* data);
 
 private:
   bool FLAG_locationChanged = false;
