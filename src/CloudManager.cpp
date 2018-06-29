@@ -87,7 +87,7 @@ void cloudManager::HANDLER_deviceConfig(const char *event, const char *data) {
   char dataStore[255];
   strcpy(dataStore, data);
 
-  const size_t bufferSize = JSON_OBJECT_SIZE(6) + 120;
+  const size_t bufferSize = JSON_OBJECT_SIZE(7) + 120;
   StaticJsonBuffer<bufferSize> jsonBuffer;
 
   JsonObject& root = jsonBuffer.parseObject(dataStore);
