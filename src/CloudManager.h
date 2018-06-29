@@ -28,6 +28,7 @@ public:
 
   void onConnect(enum sprinkler_states state);
 
+  // publishStats() - formats SprinklerStats as JSON and sends to Particle Console
   void publishStats();
 
   bool canSleep(){
@@ -41,8 +42,10 @@ public:
     promise.process();
   }
 
-  void message(const char* event, const char* data){}
+  // message() - Send general messages to destination
+  void message(const char* destination, const char* message){}
 
+  // log() - Create an entry in the Cloud log - adds timestamp message was created
   void log(const char* data);
 
 private:
